@@ -44,6 +44,8 @@ class Tooltip extends HTMLElement{
         super();
         this._tooltipContainer;
         this._toolTipText='Some dummy text'
+        //creates shadow dom
+        this.attachShadow({ mode: 'open' });
         
         
     }
@@ -56,19 +58,24 @@ class Tooltip extends HTMLElement{
         //this keyword to access web component object 
         tooltipIcon.addEventListener('mouseenter', this._showTooltip.bind(this))
         tooltipIcon.addEventListener('mouseleave', this._hideTooltip.bind(this))
-        this.appendChild(tooltipIcon);
+        this.shadowRoot.appendChild(tooltipIcon);
+        this.style.position = 'relative';
+        this.style.zIndex= '10'
     }
     //underscore is convention to call method only in class
     _showTooltip(){
         this._tooltipContainer = document.createElement('div');
         this._tooltipContainer.textContent = this._toolTipText;
-        this.append(this._tooltipContainer)
+        this._tooltipContainer.style.backgroundColor = 'black';
+        this._tooltipContainer.style.color='white';
+        this._tooltipContainer.style.position= 'absolute'
+        this.shadowRoot.append(this._tooltipContainer)
 
     }
 
     _hideTooltip(){
         //to access tooltip container we converted const tooltipContainer and instantiated it in the constructor method with this keyword 
-        this.removeChild(this._tooltipContainer);
+        this.shadowRoot.removeChild(this._tooltipContainer);
     }
 }
 //object that allows us to register an HTML element
