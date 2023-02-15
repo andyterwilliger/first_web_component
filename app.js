@@ -43,9 +43,14 @@ class Tooltip extends HTMLElement{
         //built in method executes constructor of base class youre extending (HTMLElement in this case)
         super();
         this._tooltipContainer;
+        this._toolTipText='Some dummy text'
+        
         
     }
     connectedCallback(){
+        if(this.hasAttribute('text')){
+            this._tooltipContainer = this.getAttribute('text')
+        }
         const tooltipIcon = document.createElement('span');
         tooltipIcon.textContent = " (?)"
         //this keyword to access web component object 
@@ -56,7 +61,7 @@ class Tooltip extends HTMLElement{
     //underscore is convention to call method only in class
     _showTooltip(){
         this._tooltipContainer = document.createElement('div');
-        this._tooltipContainer.textContent = 'Text';
+        this._tooltipContainer.textContent = this._toolTipText;
         this.append(this._tooltipContainer)
 
     }
