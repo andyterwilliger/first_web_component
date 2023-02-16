@@ -46,15 +46,16 @@ class Tooltip extends HTMLElement{
         this._toolTipText='Some dummy text'
         //creates shadow dom
         this.attachShadow({ mode: 'open' });
-        
+        const template = document.querySelector('#tooltip-template');
+        this.shadowRoot.appendChild(template.content.cloneNode(true))
+        //boolean to see if deep or shallow clone (nested or no nested)
         
     }
     connectedCallback(){
         if(this.hasAttribute('text')){
             this._tooltipContainer = this.getAttribute('text')
         }
-        const tooltipIcon = document.createElement('span');
-        tooltipIcon.textContent = " (?)"
+        const tooltipIcon = this.shadowRoot.querySelector('span');
         //this keyword to access web component object 
         tooltipIcon.addEventListener('mouseenter', this._showTooltip.bind(this))
         tooltipIcon.addEventListener('mouseleave', this._hideTooltip.bind(this))
