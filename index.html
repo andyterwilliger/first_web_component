@@ -8,11 +8,15 @@
     <script defer  src="app.js"></script>
 </head>
 <body>
-    <template id = "tooltip-template">
-        <span> (?)</span>
+    <!--First option for template is direclty into HTML- blueprint for content has drawbacks. to create fully reusable web component, create template in js file
+    
+        <template id = "tooltip-template">
+        <slot></slot><span> (?)</span>
     </template>
+    -->
     <p><at-tooltip text="Web Components is a set of standards!">Web Components</at-tooltip> are awesome!</p>
     <at-tooltip text="">Here we go!</at-tooltip>
+    <div>This does not get scoped styles of web component</div>
 
 </body>
 </html>

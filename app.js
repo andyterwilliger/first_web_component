@@ -46,9 +46,19 @@ class Tooltip extends HTMLElement{
         this._toolTipText='Some dummy text'
         //creates shadow dom
         this.attachShadow({ mode: 'open' });
-        const template = document.querySelector('#tooltip-template');
-        this.shadowRoot.appendChild(template.content.cloneNode(true))
-        //boolean to see if deep or shallow clone (nested or no nested)
+        this.shadowRoot.innerHTML= `
+        <style>
+        div {
+            background-color: black;
+            color: white;
+            position: absolute;
+            z-index: 10;
+        }
+        </style>
+        <slot></slot><span> (?)</span>
+        
+        `;
+        //boolean to see if deep or shallow clone (nested elements or no nested elements- only top level)
         
     }
     connectedCallback(){
@@ -67,9 +77,6 @@ class Tooltip extends HTMLElement{
     _showTooltip(){
         this._tooltipContainer = document.createElement('div');
         this._tooltipContainer.textContent = this._toolTipText;
-        this._tooltipContainer.style.backgroundColor = 'black';
-        this._tooltipContainer.style.color='white';
-        this._tooltipContainer.style.position= 'absolute'
         this.shadowRoot.append(this._tooltipContainer)
 
     }
@@ -84,3 +91,8 @@ class Tooltip extends HTMLElement{
 //some rules for tag, must have dash, no underscore, no single word
 //should be unique to avoid conflict 
 customElements.define('at-tooltip', Tooltip);
+
+
+/*
+
+ */
