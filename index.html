@@ -7,6 +7,20 @@
     <title>Basics</title>
     <script defer  src="app.js"></script>
     <script defer src="confirm-link.js"></script>
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+
+       :root{
+        --color-primary: #a4fcda;
+        font-family: sans-serif;
+       }
+   
+      
+       
+       
+    </style>
 </head>
 <body>
     <!--First option for template is direclty into HTML- blueprint for content has drawbacks. to create fully reusable web component, create template in js file
@@ -15,8 +29,8 @@
         <slot></slot><span> (?)</span>
     </template>
     -->
-    <p><at-tooltip text="Web Components is a set of standards!">Web Components</at-tooltip> are awesome!</p>
-    <at-tooltip text="">Here we go!</at-tooltip>
+    <p><at-tooltip text="Web Components is a set of standards!"><span class="important">Web Components</span></at-tooltip>are awesome! </p>
+    <at-tooltip class="important"></at-tooltip>
     <div>This does not get scoped styles of web component</div>
     <!--To add an extended built in element use is ="" attribute-->
     <a is="at-confirm-link"href="http://www.google.com">Google</a>

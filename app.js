@@ -37,25 +37,61 @@ Web component lifecycle
 */
 //class is a built in JS feature, blueprint for JS object
 //here contains all the logic to build element
+//light dom styles override shadow dom
 class Tooltip extends HTMLElement{
     //will execute this method any time the class is instantiated
     constructor(){
         //built in method executes constructor of base class youre extending (HTMLElement in this case)
         super();
+        this._tooltipVisible = false;
         this._tooltipContainer;
+        this._tooltipIcon;
         this._toolTipText='Some dummy text'
         //creates shadow dom
         this.attachShadow({ mode: 'open' });
         this.shadowRoot.innerHTML= `
         <style>
         div {
+            font-weight: normal;
             background-color: black;
             color: white;
             position: absolute;
+            top: 1.5rem;
+            left: 0.75rem;
             z-index: 10;
+            padding: 0.15rem;
+            border-radius: 3px;
+            box-shadow: 1px 1px 6px rgba(0 ,0, 0, 0.26);
         }
+        :host{
+            position: relative;
+        }
+        :host(.important){
+            background: var(--color-primary)
+            padding: 0.15rem;
+            
+        }
+        :host-context(p){
+            font-weight: bold;
+        }
+        .highlight{
+            background-color: red;
+        }
+
+        ::slotted(.highlight){
+            border-bottom: 1px dotted red;
+        }
+
+        .icon{
+            background: black;
+            color: white;
+            padding: 0.15rem 0.5rem;
+            text-align: center;
+            border-radius: 10px;
+        }
+
         </style>
-        <slot></slot><span> (?)</span>
+        <slot></slot><span class="icon"> ?</span>
         
         `;
         //boolean to see if deep or shallow clone (nested elements or no nested elements- only top level)
@@ -65,26 +101,69 @@ class Tooltip extends HTMLElement{
         if(this.hasAttribute('text')){
             this._tooltipContainer = this.getAttribute('text')
         }
-        const tooltipIcon = this.shadowRoot.querySelector('span');
+        this._tooltipIcon = this.shadowRoot.querySelector('span');
         //this keyword to access web component object 
-        tooltipIcon.addEventListener('mouseenter', this._showTooltip.bind(this))
-        tooltipIcon.addEventListener('mouseleave', this._hideTooltip.bind(this))
-        this.shadowRoot.appendChild(tooltipIcon);
-        this.style.position = 'relative';
+        this._tooltipIcon.addEventListener('mouseenter', this._showTooltip.bind(this))
+        this._tooltipIcon.addEventListener('mouseleave', this._hideTooltip.bind(this))
+        this.shadowRoot.appendChild(this._tooltipIcon);
+        //this.style.position = 'relative';
         this.style.zIndex= '10'
     }
+    //life cycle hook, executes when observed attribute updated
+    attributeChangedCallback(name, oldValue, newValue){
+        if(oldValue === newValue){
+            return;
+        } 
+        if(name === 'text'){
+            this._toolTipText = newValue;
+        }
+    }
+    // must call this to tell js what attributes should be observed
+    static get observedAttributes(){
+        //return an array with all attribute names to be observed
+        return['text'];
+    }
+
+    disconnectedCallback(){
+        console.log('disconnect')
+        this._tooltipIcon.removeEventListener('mousenter', this._showTooltip)
+        this._tooltipIcon.removeEventListener('mousenter', this._hideTooltip)
+
+    }
+    //the more components you have, more sense it makes to contain all logic for accessing shadow dom and adding
+    _render(){
+        //responsible for updating the dom
+        if(this._tooltipVisible){
+            this._tooltipContainer = document.createElement('div');
+            this._tooltipContainer.textContent = this._toolTipText;
+            this.shadowRoot.appendChild(this._tooltipContainer)
+        } else{
+            if(this._tooltipContainer){
+                this.shadowRoot.removeChild(this._tooltipContainer);
+            }
+
+        }
+    }
+
     //underscore is convention to call method only in class
+    
     _showTooltip(){
-        this._tooltipContainer = document.createElement('div');
-        this._tooltipContainer.textContent = this._toolTipText;
-        this.shadowRoot.append(this._tooltipContainer)
+        //this._tooltipContainer = document.createElement('div');
+        //this._tooltipContainer.textContent = this._toolTipText;
+       // this.shadowRoot.append(this._tooltipContainer)
+       this._tooltipVisible = true;
+       this._render();
 
     }
 
     _hideTooltip(){
         //to access tooltip container we converted const tooltipContainer and instantiated it in the constructor method with this keyword 
-        this.shadowRoot.removeChild(this._tooltipContainer);
+        //this.shadowRoot.removeChild(this._tooltipContainer);
+        this._tooltipVisible = false;
+        this._render();
+
     }
+    
 }
 //object that allows us to register an HTML element
 //two arguments, first is the name for the tag, second is JS class containing logic
@@ -94,5 +173,10 @@ customElements.define('at-tooltip', Tooltip);
 
 
 /*
+conditional host styling
+:host(.important) wrap classes, id selectors
 
+styling with host content
+
+:host-context(p) setting style if inside of paragraph
  */
